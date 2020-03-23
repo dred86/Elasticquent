@@ -59,7 +59,7 @@ trait ElasticquentTrait
      * @param array $models
      * @return ElasticquentCollection
      */
-    public function newCollection(array $models = array())
+    public function newCollection(array $models = [])
     {
         return new ElasticquentCollection($models);
     }
@@ -189,7 +189,7 @@ trait ElasticquentTrait
     {
         $instance = new static;
 
-        $all = $instance->newQuery()->get(array('*'));
+        $all = $instance->newQuery()->get(['*']);
 
         return $all->addToIndex();
     }
@@ -203,7 +203,7 @@ trait ElasticquentTrait
     {
         $instance = new static;
 
-        $all = $instance->newQuery()->get(array('*'));
+        $all = $instance->newQuery()->get(['*']);
 
         return $all->reindex();
     }
@@ -369,10 +369,9 @@ trait ElasticquentTrait
      */
     public function getBasicEsParams($getIdIfPossible = true, $limit = null, $offset = null)
     {
-        $params = array(
-            'index' => $this->getIndexName(),
-            'type' => $this->getTypeName(),
-        );
+        $params = [
+            'index' => $this->getIndexName()
+        ];
 
         if ($getIdIfPossible && $this->getKey()) {
             $params['id'] = $this->getKey();
@@ -398,7 +397,7 @@ trait ElasticquentTrait
      */
     private function buildFieldsParameter($getSourceIfPossible, $getTimestampIfPossible)
     {
-        $fieldsParam = array();
+        $fieldsParam = [];
 
         if ($getSourceIfPossible) {
             $fieldsParam[] = '_source';
@@ -452,12 +451,11 @@ trait ElasticquentTrait
 
         $mapping = $instance->getBasicEsParams();
 
-        $params = array(
-            '_source' => array('enabled' => true),
+        $params = [
             'properties' => $instance->getMappingProperties(),
-        );
+        ];
 
-        $mapping['body'][$instance->getTypeName()] = $params;
+        $mapping['body'] = $params;
 
         return $instance->getElasticSearchClient()->indices()->putMapping($mapping);
     }
@@ -513,9 +511,9 @@ trait ElasticquentTrait
 
         $client = $instance->getElasticSearchClient();
 
-        $index = array(
+        $index = [
             'index' => $instance->getIndexName(),
-        );
+        ];
 
         $settings = $instance->getIndexSettings();
         if (!is_null($settings)) {
@@ -532,8 +530,7 @@ trait ElasticquentTrait
 
         $mappingProperties = $instance->getMappingProperties();
         if (!is_null($mappingProperties)) {
-            $index['body']['mappings'][$instance->getTypeName()] = [
-                '_source' => array('enabled' => true),
+            $index['body']['mappings'] = [
                 'properties' => $mappingProperties,
             ];
         }
@@ -552,9 +549,9 @@ trait ElasticquentTrait
 
         $client = $instance->getElasticSearchClient();
 
-        $index = array(
+        $index = [
             'index' => $instance->getIndexName(),
-        );
+        ];
 
         return $client->indices()->delete($index);
     }
@@ -584,7 +581,7 @@ trait ElasticquentTrait
      *
      * @return static
      */
-    public function newFromHitBuilder($hit = array())
+    public function newFromHitBuilder($hit = [])
     {
         $key_name = $this->getKeyName();
         
